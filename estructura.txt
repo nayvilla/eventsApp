@@ -1,0 +1,50 @@
+lib/
+├── main.dart
+│
+├── core/
+│   ├── theme/
+│   │   ├── app_theme.dart           # Selector de temas
+│   │   ├── light_theme.dart         # ThemeData completo (colores + texto claro)
+│   │   ├── dark_theme.dart          # ThemeData completo para oscuro
+│   │   └── viu_theme.dart           # ThemeData personalizado VIU
+│   │
+│   └── providers/
+│       └── theme_provider.dart      # Riverpod para cambio dinámico de tema
+│
+├── models/
+│   ├── user_model.dart                   # Modelo de usuario
+│   └── event_model.dart                  # Modelo de evento
+│
+├── data/
+│   ├── datasources/
+│   │   └── api_service.dart              # Peticiones HTTP al backend (login, eventos, etc.)
+│   └── repositories/
+│       ├── auth_repository.dart
+│       └── event_repository.dart
+│
+├── viewmodels/
+│   ├── auth_viewmodel.dart               # Estado de login, sesión, etc.
+│   ├── event_viewmodel.dart              # Estado para eventos
+│   └── map_viewmodel.dart                # Estado para mapa y geolocalización
+│
+├── views/
+│   ├── auth/
+│   │   ├── login_screen.dart
+│   │   └── register_screen.dart
+│   │
+│   ├── home/home_screen.dart
+│   ├── event/event_detail_screen.dart
+│   ├── map/map_screen.dart
+│   ├── calendar/calendar_screen.dart
+│   ├── profile/profile_screen.dart       # Aquí irá el botón para cambiar tema
+│   └── notifications/notifications_screen.dart
+│
+├── widgets/                              # Widgets reutilizables globalmente
+│   ├── event_card.dart
+│   ├── event_form.dart
+│   ├── filters_dropdown.dart
+│   ├── loading_indicator.dart
+│   └── custom_app_bar.dart
+│
+└── routes/
+    └── app_router.dart                   # Rutas con Navigator
