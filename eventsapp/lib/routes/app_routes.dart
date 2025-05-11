@@ -29,7 +29,8 @@ class AppRoutes {
       case calendar:
         return MaterialPageRoute(builder: (_) => const CalendarScreen());
       case eventDetail:
-        return MaterialPageRoute(builder: (_) => const EventDetailScreen());
+      final eventId = settings.arguments as int;
+        return MaterialPageRoute(builder: (_) => EventDetailScreen(eventId: eventId));
       case map:
         return MaterialPageRoute(builder: (_) => const MapScreen());
       case profile:

@@ -5,6 +5,8 @@ import '../../widgets/event_card.dart';
 import '../../widgets/category_button.dart';
 import '../core/providers/theme_provider.dart';
 import '../../viewmodels/auth_viewmodel.dart';
+import '../routes/app_routes.dart';
+import '../widgets/loading_indicator.dart';
 
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -59,6 +61,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     String welcomeMessage = "Bienvenido 👋\n$userName";
     int maxLength = 37;
+    bool navigating = false;
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -75,117 +78,142 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: eventsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(e.toString())),
-            data: (events) {
-              final filteredEvents = events.where((event) {
-                final matchesCategory = _selectedCategory == "Todos" || event.category.toLowerCase() == _selectedCategory.toLowerCase();
-                final matchesSearch = event.title.toLowerCase().contains(_searchTerm);
-                return matchesCategory && matchesSearch;
-              }).toList();
-
-              final popularEvents = filteredEvents.where((e) => e.destacado).toList();
-              final recommendedEvents = filteredEvents.where((e) => !e.destacado).toList();
-
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Bienvenida y cambio de tema
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: eventsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text(e.toString())),
+                data: (events) {
+                  final filteredEvents = events.where((event) {
+                    final matchesCategory = _selectedCategory == "Todos" || event.category.toLowerCase() == _selectedCategory.toLowerCase();
+                    final matchesSearch = event.title.toLowerCase().contains(_searchTerm);
+                    return matchesCategory && matchesSearch;
+                  }).toList();
+            
+                  final popularEvents = filteredEvents.where((e) => e.destacado).toList();
+                  final recommendedEvents = filteredEvents.where((e) => !e.destacado).toList();
+            
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(welcomeMessage.length > maxLength 
-                          ? welcomeMessage.substring(0, maxLength) 
-                          : welcomeMessage, 
-                          style: theme.textTheme.titleLarge
+                        // Bienvenida y cambio de tema
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(welcomeMessage.length > maxLength 
+                              ? welcomeMessage.substring(0, maxLength) 
+                              : welcomeMessage, 
+                              style: theme.textTheme.titleLarge
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                final nextMode = {
+                                  AppThemeMode.viu: AppThemeMode.light,
+                                  AppThemeMode.light: AppThemeMode.dark,
+                                  AppThemeMode.dark: AppThemeMode.viu,
+                                }[currentMode]!;
+                                themeNotifier.setTheme(nextMode);
+                              },
+                              child: CircleAvatar(
+                                backgroundColor: theme.cardColor,
+                                child: Icon(icon, color: theme.primaryColor),
+                              ),
+                            ),
+                          ],
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            final nextMode = {
-                              AppThemeMode.viu: AppThemeMode.light,
-                              AppThemeMode.light: AppThemeMode.dark,
-                              AppThemeMode.dark: AppThemeMode.viu,
-                            }[currentMode]!;
-                            themeNotifier.setTheme(nextMode);
-                          },
-                          child: CircleAvatar(
-                            backgroundColor: theme.cardColor,
-                            child: Icon(icon, color: theme.primaryColor),
+                        const SizedBox(height: 16),
+            
+                        // Buscador
+                        TextField(
+                          onChanged: _onSearchChanged,
+                          decoration: InputDecoration(
+                            hintText: "Buscar evento...",
+                            prefixIcon: const Icon(Icons.search),
+                            filled: true,
+                            fillColor: theme.cardColor,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+            
+                        // Botones de categoría
+                        Text("Categoría", style: theme.textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (var cat in ["Todos", "Música", "Deporte", "Comida", "Arte", "Tecnología"]) ...[
+                                CategoryButton(
+                                  label: cat,
+                                  icon: categoryIcons[cat]!,
+                                  isSelected: _selectedCategory == cat,
+                                  onTap: () => _onCategorySelected(cat),
+                                ),
+                                const SizedBox(width: 8),
+                              ]
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+            
+                        Text("Eventos Destacados", style: theme.textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: popularEvents.length,
+                            itemBuilder: (_, i) => GestureDetector(
+                              onTap: () async {
+                                setState(() => navigating = true);
+                                await Navigator.pushReplacementNamed(context, AppRoutes.eventDetail, arguments: popularEvents[i].id);
+                                setState(() => navigating = false);
+                              },
+                              child: EventCard(event: popularEvents[i])
+                            ),
+                          ),
+                        ),
+            
+                        const SizedBox(height: 24),
+            
+                        Text("Eventos Disponibles", style: theme.textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: recommendedEvents.length,
+                            itemBuilder: (_, i) => GestureDetector(
+                              onTap: () async {
+                                setState(() => navigating = true);
+                                await Navigator.pushReplacementNamed(context, AppRoutes.eventDetail, arguments: recommendedEvents[i].id);
+                                setState(() => navigating = false);
+                              },
+                              child: EventCard(event: recommendedEvents[i])
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-
-                    // Buscador
-                    TextField(
-                      onChanged: _onSearchChanged,
-                      decoration: InputDecoration(
-                        hintText: "Buscar evento...",
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: theme.cardColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Botones de categoría
-                    Text("Categoría", style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 12),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          for (var cat in ["Todos", "Música", "Deporte", "Comida", "Arte", "Tecnología"]) ...[
-                            CategoryButton(
-                              label: cat,
-                              icon: categoryIcons[cat]!,
-                              isSelected: _selectedCategory == cat,
-                              onTap: () => _onCategorySelected(cat),
-                            ),
-                            const SizedBox(width: 8),
-                          ]
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    Text("Eventos Destacados", style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: popularEvents.length,
-                        itemBuilder: (_, i) => EventCard(event: popularEvents[i]),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    Text("Eventos Disponibles", style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: recommendedEvents.length,
-                        itemBuilder: (_, i) => EventCard(event: recommendedEvents[i]),
-                      ),
-                    ),
-                  ],
+                  );
+                },
+              ),
+            ),
+            if (navigating)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black38,
+                  child: Center(child: LoginLoading()),
                 ),
-              );
-            },
-          ),
+              ),
+          ],
         ),
       ),
     );
