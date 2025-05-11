@@ -9,7 +9,7 @@ final darkTheme = ThemeData(
     backgroundColor: Color(0xFF1E2C3C),
     foregroundColor: Colors.white,
   ),
-  cardColor: Color(0xFF1E2C3C),
+  cardColor: Color.fromARGB(255, 36, 68, 105),
   textTheme: const TextTheme(
     titleLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
     titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white70),
@@ -20,5 +20,9 @@ final darkTheme = ThemeData(
       backgroundColor: Color(0xFF132848),
       foregroundColor: Colors.white,
     ),
+  ),
+  iconTheme: IconThemeData(
+    color: Color.fromARGB(255, 255, 255, 255),  
+    size: 30,
   ),
 );
