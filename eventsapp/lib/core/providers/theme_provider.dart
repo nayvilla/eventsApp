@@ -11,12 +11,12 @@ class ThemeNotifier extends Notifier<ThemeData> {
 
   @override
   ThemeData build() {
-    return _getThemeForMode(_mode); // ✅ se asegura que el tema inicial sea el correcto
+    return _getThemeForMode(_mode); // se asegura que el tema inicial sea el correcto
   }
 
   void setTheme(AppThemeMode mode) {
     _mode = mode;
-    state = _getThemeForMode(mode); // ✅ aplica el nuevo tema
+    state = _getThemeForMode(mode); // aplica el nuevo tema
   }
 
   ThemeData _getThemeForMode(AppThemeMode mode) {
