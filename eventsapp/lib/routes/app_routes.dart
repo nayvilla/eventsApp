@@ -6,7 +6,7 @@ import '../views/auth/register_screen.dart';
 import '../views/home_screen.dart';
 import '../views/calendar_screen.dart';
 import '../views/event_detail_screen.dart';
-import '../views/map_screen.dart';
+import '../views/favorite_screen.dart';
 import '../views/profile_screen.dart';
 
 class AppRoutes {
@@ -15,7 +15,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String calendar = '/calendar';
   static const String eventDetail = '/event-detail';
-  static const String map = '/map';
+  static const String favorite = '/favorite';
   static const String profile = '/profile';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -31,8 +31,8 @@ class AppRoutes {
       case eventDetail:
       final eventId = settings.arguments as int;
         return MaterialPageRoute(builder: (_) => EventDetailScreen(eventId: eventId));
-      case map:
-        return MaterialPageRoute(builder: (_) => const MapScreen());
+      case favorite:
+        return MaterialPageRoute(builder: (_) => const FavoriteScreen());
       case profile:
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       default:

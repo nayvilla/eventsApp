@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../core/providers/auth_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// ViewModel para manejar el estado del login.
 /// Expone un método `login` y mantiene el estado del usuario autenticado.

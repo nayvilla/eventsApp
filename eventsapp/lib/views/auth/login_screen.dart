@@ -7,6 +7,8 @@ import '../../viewmodels/auth_viewmodel.dart';
 import '../../widgets/custom_snackbar.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/social_icon_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +20,30 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+  // Método para cargar las credenciales guardadas
+  Future<void> _loadSavedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('email');
+    final savedPassword = prefs.getString('password');
+
+    if (savedEmail != null) {
+      _emailController.text = savedEmail;
+      setState(() => _savePassword = true);
+    }
+
+    if (savedPassword != null) {
+      _passwordController.text = savedPassword;
+      setState(() => _savePassword = true);
+    }
+  }
+
   bool _obscurePassword = true;
+  bool _savePassword = true; // Controlador para el checkbox
 
   @override
   Widget build(BuildContext context) {
@@ -102,17 +127,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "¿Olvidaste tu contraseña?",
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.primaryColor,
-                            ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: _savePassword,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                _savePassword = newValue ?? false; // Actualiza el estado del checkbox
+                              });
+                            },
                           ),
-                        ),
+                          const Text("¿Quieres guardar tu contraseña?"),
+                        ],
                       ),
 
                       const SizedBox(height: 8),
@@ -135,6 +162,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             if (result.hasError) {
                               showCustomSnackBar(context, result.error.toString(), false);
                             } else if (result.hasValue && result.value != null) {
+                              // Verificar si el checkbox está marcado
+                              if (_savePassword) {
+                                // Guardar las credenciales si el checkbox está marcado
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setString('email', email);
+                                await prefs.setString('password', password);  // O lo que necesites guardar
+                              }
                               Navigator.pushReplacementNamed(context, AppRoutes.home);
                               showCustomSnackBar(context, 'Inicio de sesión exitoso', true);
                             }

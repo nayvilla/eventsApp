@@ -65,15 +65,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: 0, // este 0 indica que estás en la pantalla de inicio
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: Colors.grey,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              break;
+            case 1:
+              Navigator.pushNamed(context, AppRoutes.calendar);
+              break;
+            case 2:
+              Navigator.pushNamed(context, AppRoutes.favorite);
+              break;
+            case 3:
+              Navigator.pushNamed(context, AppRoutes.profile);
+              break;
+          }
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendario'),
-          BottomNavigationBarItem(icon: Icon(Icons.headphones), label: 'Audio'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favoritos'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

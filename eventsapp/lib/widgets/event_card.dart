@@ -3,7 +3,8 @@ import '../models/event_model.dart';
 
 class EventCard extends StatelessWidget {
   final EventModel event;
-  const EventCard({super.key, required this.event});
+  final bool isFavorite;
+  const EventCard({super.key, required this.event, this.isFavorite = false});
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +103,7 @@ class EventCard extends StatelessWidget {
             child: CircleAvatar(
               radius: 14,
               backgroundColor: theme.scaffoldBackgroundColor,
-              child: Icon(Icons.favorite_border, size: 16, color: Colors.red),
+              child: Icon(isFavorite ? Icons.favorite : Icons.event_available_rounded, size: 16, color: Colors.red),
             ),
           ),
         ],

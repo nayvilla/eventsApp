@@ -33,14 +33,26 @@ class EventRemoteDatasource {
 
   /// Obtiene eventos filtrados por id
   Future<EventModel> getEventById(int id) async {
-  final response = await http.get(Uri.parse(ApiConstants.eventById(id.toString())));
+    final response = await http.get(Uri.parse(ApiConstants.eventById(id.toString())));
 
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> json = jsonDecode(response.body);
-    return EventModel.fromJson(json);
-  } else {
-    throw Exception('Error al obtener el evento con ID $id');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> json = jsonDecode(response.body);
+      return EventModel.fromJson(json);
+    } else {
+      throw Exception('Error al obtener el evento con ID $id');
+    }
   }
-}
 
+  /// Obtiene los eventos favoritos de un usuario específico
+  Future<List<EventModel>> getUserFavorites(String userId) async {
+    final url = Uri.parse(ApiConstants.userFavorites(userId));
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => EventModel.fromJson(e)).toList();
+    } else {
+      throw Exception('No se pudieron cargar los eventos favoritos del usuario $userId');
+    }
+  }
 }

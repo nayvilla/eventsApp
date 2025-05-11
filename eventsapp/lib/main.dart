@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/theme_provider.dart';
 import 'routes/app_routes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -32,7 +33,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Events App',
       theme: theme,
-      initialRoute: AppRoutes.home, // Redirige a la pantalla de inicio de sesión
+      initialRoute: AppRoutes.login, // Redirige a la pantalla de inicio de sesión
       onGenerateRoute: AppRoutes.onGenerateRoute,
     );
   }

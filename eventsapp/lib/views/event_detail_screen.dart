@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/providers/favorite_provider.dart';
 import '../routes/app_routes.dart';
+import '../viewmodels/add_favorite_action_viewmodel.dart';
+import '../viewmodels/auth_viewmodel.dart';
 import '../viewmodels/event_detail_viewmodel.dart';
+import '../widgets/custom_snackbar.dart';
 import '../widgets/loading_indicator.dart';
 import '../widgets/package_card.dart';
 
@@ -26,14 +30,46 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     final theme = Theme.of(context);
     final state = ref.watch(eventDetailViewModelProvider);
     final event = state.value;
+    final user = ref.watch(authViewModelProvider).value;
+    final addState = ref.watch(favoriteActionViewModelProvider); 
+    final addNotifier = ref.read(favoriteEventsViewModelProvider.notifier);
 
-    if (state.isLoading || event == null) {
+    if (state.isLoading || event == null || addState.isLoading) {
       return const Scaffold(
         body: Center(child: LoginLoading()),
       );
     }
 
     return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1, // estamos en la segunda pantalla
+        selectedItemColor: theme.primaryColor,
+        unselectedItemColor: Colors.grey,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, AppRoutes.home);
+              break;
+            case 1:
+              Navigator.pushNamed(context, AppRoutes.calendar);
+              break;
+            case 2:
+              Navigator.pushNamed(context, AppRoutes.favorite);
+              break;
+            case 3:
+              Navigator.pushNamed(context, AppRoutes.profile);
+              break;
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendario'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favoritos'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+        ],
+      ),
       body: Column(
         children: [
           // Imagen superior
@@ -61,9 +97,16 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
               Positioned(
                 top: 40,
                 right: 16,
-                child: CircleAvatar(
-                  backgroundColor: theme.scaffoldBackgroundColor,
-                  child: Icon(Icons.favorite_border),
+                child: GestureDetector(
+                  onTap: () async {
+                    await ref.read(favoriteActionViewModelProvider.notifier).addToFavorites((user?.id ?? 1).toString(), event.id);
+                    await addNotifier.reloadUserFavorities((user?.id ?? 1).toString());
+                    showCustomSnackBar(context, 'Evento añadido a favoritos', true);
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    child: Icon(Icons.favorite_border),
+                  ),
                 ),
               ),
             ],

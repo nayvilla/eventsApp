@@ -18,4 +18,8 @@ class EventRepository {
   Future<EventModel> getEventById(int id) {
     return datasource.getEventById(id);
   }
+
+  Future<List<EventModel>> getUserFavorites(String userId) {
+    return datasource.getUserFavorites(userId);
+  }
 }
