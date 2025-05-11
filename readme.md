@@ -27,7 +27,7 @@ Aquí puedes ver una demostración completa de cómo funciona la aplicación:
 ---
 
 ## 📂 Estructura del proyecto
-
+```bash
 lib/
 ├── assets/ # Recursos gráficos y estáticos
 ├── core/ # Configuración global y providers (tema, API, etc.)
@@ -38,6 +38,7 @@ lib/
 ├── views/ # Vistas principales (Home, Login, Registro, etc.)
 ├── widgets/ # Widgets reutilizables (cards, loaders, etc.)
 └── main.dart # Punto de entrada de la app
+```
 ---
 
 ## 🌐 API REST
