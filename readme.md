@@ -14,6 +14,9 @@ Proyecto académico y funcional para exploración de eventos.
 Aquí puedes ver una demostración completa de cómo funciona la aplicación:
 
 👉 
+https://github.com/user-attachments/assets/501203ff-fd50-42ed-96bf-67036b7ff6e4
+
+
 ---
 
 ## 🔧 Tecnologías
