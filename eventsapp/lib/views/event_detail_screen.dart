@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../routes/app_routes.dart';
 import '../viewmodels/event_detail_viewmodel.dart';
 import '../widgets/loading_indicator.dart';
+import '../widgets/package_card.dart';
 
 class EventDetailScreen extends ConsumerStatefulWidget {
   final int eventId;
@@ -38,30 +39,31 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           // Imagen superior
           Stack(
             children: [
-              Image.network(
+                Image.network(
                 event.imageUrl,
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
               ),
               Positioned(
-  top: 40,
-  left: 16,
-  child: GestureDetector(
-    onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
-    child: CircleAvatar(
-      backgroundColor: Colors.white,
-      child: Icon(Icons.arrow_back, color: theme.primaryColor),
-    ),
-  ),
-),
+                top: 40,
+                left: 16,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: CircleAvatar(
+                    backgroundColor: theme.scaffoldBackgroundColor,
+                    child: Icon(Icons.arrow_back),
+                  ),
+                ),
+              ),
 
               Positioned(
                 top: 40,
                 right: 16,
                 child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.favorite_border, color: theme.primaryColor),
+                  backgroundColor: theme.scaffoldBackgroundColor,
+                  child: Icon(Icons.favorite_border),
                 ),
               ),
             ],
@@ -111,7 +113,27 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     Text("Descripción", style: theme.textTheme.titleMedium),
                     const SizedBox(height: 8),
                     Text(event.description, style: theme.textTheme.bodyMedium),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                      children: event.etiquetas.map((tag) {
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: theme.cardColor, // Fondo con opacidad ligera
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            tag, // Muestra la etiqueta
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 18),
 
                     Text("Requisitos", style: theme.textTheme.titleMedium),
                     const SizedBox(height: 8),
@@ -120,43 +142,36 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
                     Text("Información del evento", style: theme.textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    _infoRow("Categoría", event.category, theme),
-                    _infoRow("Precio", "\$${event.price}", theme),
-                    _infoRow("Capacidad", "${event.capacidad} personas", theme),
-                    _infoRow("Organizador", event.organizador, theme),
-                    _infoRow("Registro requerido", event.registro ? "Sí" : "No", theme),
-                    _infoRow("Etiquetas", event.etiquetas.join(", "), theme),
-
-                    const SizedBox(height: 30),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: const Text("Book Now"),
-                      ),
+                    PackageCard(
+                      label: "Categoría",
+                      value: event.category,
+                      icon: Icons.category,
                     ),
+                    PackageCard(
+                      label: "Precio",
+                      value: "\$${event.price}",
+                      icon: Icons.attach_money,
+                    ),
+                    PackageCard(
+                      label: "Capacidad",
+                      value: "${event.capacidad} personas",
+                      icon: Icons.people,
+                    ),
+                    PackageCard(
+                      label: "Organizador",
+                      value: event.organizador,
+                      icon: Icons.person,
+                    ),
+                    PackageCard(
+                      label: "Registro requerido",
+                      value: event.registro ? "Sí" : "No",
+                      icon: Icons.check_box,
+                    )
                   ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _infoRow(String label, String value, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("$label: ", style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );

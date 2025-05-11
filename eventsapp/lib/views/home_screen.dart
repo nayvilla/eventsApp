@@ -173,8 +173,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             itemBuilder: (_, i) => GestureDetector(
                               onTap: () async {
                                 setState(() => navigating = true);
-                                await Navigator.pushReplacementNamed(context, AppRoutes.eventDetail, arguments: popularEvents[i].id);
-                                setState(() => navigating = false);
+                                await Navigator.pushNamed(context, AppRoutes.eventDetail, arguments: popularEvents[i].id);
+                                if (mounted) {
+                                  setState(() => navigating = false);
+                                }
                               },
                               child: EventCard(event: popularEvents[i])
                             ),
@@ -193,8 +195,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             itemBuilder: (_, i) => GestureDetector(
                               onTap: () async {
                                 setState(() => navigating = true);
-                                await Navigator.pushReplacementNamed(context, AppRoutes.eventDetail, arguments: recommendedEvents[i].id);
-                                setState(() => navigating = false);
+                                await Navigator.pushNamed(context, AppRoutes.eventDetail, arguments: recommendedEvents[i].id);
+                                if (mounted) {
+                                  setState(() => navigating = false);
+                                }
                               },
                               child: EventCard(event: recommendedEvents[i])
                             ),
