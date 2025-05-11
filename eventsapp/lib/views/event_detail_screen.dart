@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../routes/app_routes.dart';
 import '../viewmodels/event_detail_viewmodel.dart';
 import '../widgets/loading_indicator.dart';
 
@@ -44,13 +45,17 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                 fit: BoxFit.cover,
               ),
               Positioned(
-                top: 40,
-                left: 16,
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: BackButton(color: theme.primaryColor),
-                ),
-              ),
+  top: 40,
+  left: 16,
+  child: GestureDetector(
+    onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.home),
+    child: CircleAvatar(
+      backgroundColor: Colors.white,
+      child: Icon(Icons.arrow_back, color: theme.primaryColor),
+    ),
+  ),
+),
+
               Positioned(
                 top: 40,
                 right: 16,
